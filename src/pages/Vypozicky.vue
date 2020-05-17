@@ -6,12 +6,11 @@
         class="col-8"
         style="min-width: 720px"
         title="Moje výpožičky"
-        :data="data"
+        :data="vypozicky"
         :columns="columns"
-        row-key="nazov"
+        row-key="id"
         selection="single"
         :selected.sync="selected"
-        hide-bottom
       />
 
       <div class="aside col-4 q-pa-md">
@@ -85,8 +84,8 @@ export default {
           align: 'left',
           field: row => row.kniha.nazov
         },
-        { name: 'datum_od', align: 'right', label: 'od', field: 'datum_od', sortable: true },
-        { name: 'datum_do', align: 'left', label: 'do', field: 'datum_do', sortable: true }
+        { name: 'datum_od', align: 'right', label: 'od', field: 'datum_od', format: val => val.split('-').join('.') },
+        { name: 'datum_do', align: 'left', label: 'do', field: 'datum_do', format: val => val.split('-').join('.') }
       ],
       myLocale: {
         /* starting with Sunday */
@@ -142,14 +141,30 @@ export default {
         return
       }
 
+      axios
+        .post('http://127.0.0.1:8081/predlzenieVypozicky', this.ziadost)
+        .then(response => {
+          if (response.status === 200) {
+            console.log(response.data)
+          }
+        })
+        .catch(error => {
+          console.log(error)
+          // this.notify(error.message, 'Nastala neočakávaná chyba')
+        })
+
       console.log('pokracujeme')
     }
   },
 
   computed: {
-    data: {
+    ziadost: {
       get () {
-        return this.vypozicky
+        return {
+          vypozicka: { ...this.selected },
+          predlzenie_do: this.date,
+          dovod_predlzenia: this.dovod_citatel
+        }
       }
     }
   }
