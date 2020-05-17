@@ -83,7 +83,7 @@ export default {
           required: true,
           label: 'Názov',
           align: 'left',
-          field: 'nazov'
+          field: row => row.kniha.nazov
         },
         { name: 'datum_od', align: 'right', label: 'od', field: 'datum_od', sortable: true },
         { name: 'datum_do', align: 'left', label: 'do', field: 'datum_do', sortable: true }
