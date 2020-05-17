@@ -70,7 +70,7 @@ export default {
       dovod_citatel_error: false,
       dovod_citatel_message: '',
 
-      date: '2020-05-16',
+      date: '2020-01-01',
       date_error: false,
       date_message: '',
 
@@ -115,6 +115,14 @@ export default {
 
   methods: {
     onSubmit () {
+      if (this.selected.length !== 1) {
+        this.$q.dialog({
+          title: 'Chyba',
+          message: 'Nevybrali ste žiadnu výpožičku na predĺženie'
+        })
+        return
+      }
+
       // Dôvod predĺženie nemôže byť prázdny
       if (!this.dovod_citatel) {
         this.dovod_citatel_error = true
@@ -126,11 +134,11 @@ export default {
 
       // Dátum nemôže byť v minulosti
       const d1 = new Date(this.date).setHours(0, 0, 0, 0)
-      const d2 = new Date().setHours(0, 0, 0, 0)
+      const d2 = new Date(this.convertToDate(this.selected[0].datum_do)).setHours(0, 0, 0, 0)
 
-      if (d1 < d2) {
+      if (d1 <= d2) {
         this.date_error = true
-        this.date_message = 'Dátum nemôže byť v minulosti'
+        this.date_message = 'Dátum musí byť väčší ako dátum konca výpožičky'
       } else {
         this.date_error = false
         this.date_message = ''
@@ -145,7 +153,11 @@ export default {
         .post('http://127.0.0.1:8081/predlzenieVypozicky', this.ziadost)
         .then(response => {
           if (response.status === 200) {
-            console.log(response.data)
+            if (response.data.error) {
+              this.alert('Žiadosť zamietnutá', 'Predĺženie zvolenej výpožičky nie je možné z dôvodu: ' + response.data.error)
+            } else {
+              this.alert('Success', response.data.success)
+            }
           }
         })
         .catch(error => {
@@ -154,6 +166,24 @@ export default {
         })
 
       console.log('pokracujeme')
+    },
+
+    alert (title, message) {
+      this.$q.dialog({
+        title: title,
+        message: message
+      }).onOk(() => {
+        // console.log('OK')
+      }).onCancel(() => {
+        // console.log('Cancel')
+      }).onDismiss(() => {
+        // console.log('I am triggered on both OK and Cancel')
+      })
+    },
+
+    convertToDate (date) {
+      const d = date.split('-')
+      return `${d[2]}/${d[1]}/${d[0]}`
     }
   },
 
@@ -161,10 +191,16 @@ export default {
     ziadost: {
       get () {
         return {
-          vypozicka: { ...this.selected },
-          predlzenie_do: this.date,
+          vypozicka: { ...this.selected[0] },
+          predlzenie_do: this.computedDate,
           dovod_predlzenia: this.dovod_citatel
         }
+      }
+    },
+    computedDate: {
+      get () {
+        const d = this.date.split('/')
+        return `${d[2]}-${d[1]}-${d[0]}`
       }
     }
   }
