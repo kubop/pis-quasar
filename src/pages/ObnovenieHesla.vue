@@ -44,14 +44,14 @@ export default {
       }
 
       axios
-        .post('http://127.0.0.1:8081/verifyEmailAddress', this.emailJson)
+        .post('http://127.0.0.1:8081/api/obnovenie-hesla/validaciaEmailu', this.emailJson)
         .then(response => {
           if (response.status === 200) {
             if (!response.data.valid) {
               this.alert('Chyba', 'Zadali ste zlý formát emailovej adresy')
             } else {
               axios
-                .post('http://127.0.0.1:8081/forgotPassword', this.emailJson)
+                .post('http://127.0.0.1:8081/api/obnovenie-hesla/odoslanieEmailu', this.emailJson)
                 .then(response => {
                   if (response.status === 200) {
                     if (response.data.error) {

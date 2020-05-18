@@ -6,7 +6,7 @@
         class="col-8"
         style="min-width: 720px"
         title="Moje výpožičky"
-        :data="vypozicky"
+        :data="vypozicky_knihy"
         :columns="columns"
         row-key="id"
         selection="single"
@@ -60,6 +60,7 @@
 
 <script>
 import axios from 'axios'
+// import * as soap from 'soap'
 
 export default {
   name: 'Vypozicky',
@@ -75,6 +76,8 @@ export default {
       date_message: '',
 
       vypozicky: [],
+      knihy: [],
+
       selected: [],
       columns: [
         {
@@ -82,7 +85,11 @@ export default {
           required: true,
           label: 'Názov',
           align: 'left',
-          field: row => row.kniha.nazov
+          field: row => {
+            if (row.kniha) {
+              return row.kniha.nazov
+            }
+          }
         },
         { name: 'datum_od', align: 'right', label: 'od', field: 'datum_od', format: val => val.split('-').join('.') },
         { name: 'datum_do', align: 'left', label: 'do', field: 'datum_do', format: val => val.split('-').join('.') }
@@ -101,16 +108,42 @@ export default {
   mounted () {
     this.date = new Date().toISOString().slice(0, 10)
     axios
-      .post('http://127.0.0.1:8081/vypozicky', { citatel: 1 })
-      .then(response => {
-        if (response.status === 200) {
+      .post('http://127.0.0.1:8081/api/vypozicky/getByCitatelID', {
+        citatel: 1
+      }).then(response => {
+        if (response && response.status === 200 && response.data && response.data.length >= 1) {
           this.vypozicky = response.data
+          axios
+            .post('http://127.0.0.1:8081/api/knihy/getByIDs', {
+              ids: this.knihy_ids
+            }).then(response => {
+              if (response && response.status === 200 && response.data && response.data.length >= 1) {
+                this.knihy = response.data
+              }
+            }).catch(error => {
+              console.log(error)
+            })
         }
-      })
-      .catch(error => {
+      }).catch(error => {
         console.log(error)
-        // this.notify(error.message, 'Nastala neočakávaná chyba')
       })
+    /*
+    var url = 'http://localhost:8081/wsdl?WSDL'
+    var args = { email: 'value' }
+    soap.createClient(url, function (err, client) {
+      if (err) {
+        console.log(err)
+        return
+      }
+      client.validateEmail(args, function (err, result) {
+        if (err) {
+          console.log(err)
+          return
+        }
+        console.log(result)
+      })
+    })
+    */
   },
 
   methods: {
@@ -150,13 +183,13 @@ export default {
       }
 
       axios
-        .post('http://127.0.0.1:8081/predlzenieVypozicky', this.ziadost)
+        .post('http://127.0.0.1:8081/api/vypozicky/predlzenieVypozicky', this.ziadost)
         .then(response => {
           if (response.status === 200) {
             if (response.data.error) {
               this.alert('Žiadosť zamietnutá', 'Predĺženie zvolenej výpožičky nie je možné z dôvodu: ' + response.data.error)
             } else {
-              this.alert('Success', response.data.success)
+              this.alert('Success', response.data.success ? 'Výborne' : '')
             }
           }
         })
@@ -164,21 +197,13 @@ export default {
           console.log(error)
           // this.notify(error.message, 'Nastala neočakávaná chyba')
         })
-
-      console.log('pokracujeme')
     },
 
     alert (title, message) {
       this.$q.dialog({
         title: title,
         message: message
-      }).onOk(() => {
-        // console.log('OK')
-      }).onCancel(() => {
-        // console.log('Cancel')
-      }).onDismiss(() => {
-        // console.log('I am triggered on both OK and Cancel')
-      })
+      }).onOk().onCancel().onDismiss()
     },
 
     convertToDate (date) {
@@ -201,6 +226,23 @@ export default {
       get () {
         const d = this.date.split('/')
         return `${d[2]}-${d[1]}-${d[0]}`
+      }
+    },
+    knihy_ids: {
+      get () {
+        return this.vypozicky.map(v => {
+          return { id: v.kniha_id }
+        })
+      }
+    },
+    vypozicky_knihy: {
+      get () {
+        return this.vypozicky.map(v => {
+          return {
+            ...v,
+            kniha: this.knihy.find(k => k.id === v.kniha_id)
+          }
+        })
       }
     }
   }

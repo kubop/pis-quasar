@@ -20,7 +20,7 @@
       />
 
       <div>
-        <a href="#/obnovenie-hesla">
+        <a href="#/prihlasenie/obnovenie-hesla">
           Zabudli ste heslo?
         </a>
       </div>

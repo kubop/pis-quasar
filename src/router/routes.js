@@ -18,14 +18,8 @@ const routes = [
     path: '/prihlasenie',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Prihlasenie.vue') }
-    ]
-  },
-  {
-    path: '/obnovenie-hesla',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      { path: '', component: () => import('pages/ObnovenieHesla.vue') }
+      { path: '', component: () => import('pages/Prihlasenie.vue') },
+      { path: 'obnovenie-hesla', component: () => import('pages/ObnovenieHesla.vue') }
     ]
   },
   {
