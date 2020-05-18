@@ -189,13 +189,44 @@ export default {
             if (response.data.error) {
               this.alert('Žiadosť zamietnutá', 'Predĺženie zvolenej výpožičky nie je možné z dôvodu: ' + response.data.error)
             } else {
-              this.alert('Success', response.data.success ? 'Výborne' : '')
+              this.$q.dialog({
+                title: 'Povtrdenie žiadosti',
+                message: 'Prosím overte si dané údaje:<br/>' +
+                          'Kniha: {this.selected.kniha.nazov}<br/>'.replace('{this.selected.kniha.nazov}', this.selected[0].kniha.nazov) +
+                          'Predĺženie do: {this.date}<br/>'.replace('{this.date}', this.date) +
+                          'Dôvod: {this.dovod_citatel}'.replace('{this.dovod_citatel}', this.dovod_citatel),
+                html: true,
+                ok: {
+                  push: true,
+                  label: 'Potvrdiť'
+                },
+                cancel: {
+                  push: true,
+                  label: 'Zatvoriť',
+                  color: 'negative'
+                }
+              }).onOk(() => {
+                axios
+                  .post('http://127.0.0.1:8081/api/ziadosti/vytvoritNovu', this.ziadost)
+                  .then(response => {
+                    if (response.status === 200) {
+                      this.alert(
+                        'Úspešné podanie žiadosti',
+                        'Vaša žiadosť o predĺženie výpožičky bola odoslaná na spracovanie. O jej priebehu budete informovaný emailom, prípadne SMS.'
+                      )
+                    }
+                  })
+                  .catch(error => {
+                    console.log(error)
+                    this.alert('Chyba', 'Nepodarilo sa vytvoriť novú žiadosť')
+                  })
+              })
             }
           }
         })
         .catch(error => {
           console.log(error)
-          // this.notify(error.message, 'Nastala neočakávaná chyba')
+          this.alert('Chyba', 'Nepodarilo sa overiť udaje na serveri')
         })
     },
 
@@ -203,7 +234,7 @@ export default {
       this.$q.dialog({
         title: title,
         message: message
-      }).onOk().onCancel().onDismiss()
+      })
     },
 
     convertToDate (date) {

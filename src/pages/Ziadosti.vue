@@ -36,8 +36,8 @@ export default {
           align: 'right',
           label: 'predĺženie o (dní)',
           field: row => {
-            const d1 = new Date(row.vypozicana_do.split('.')[2], row.vypozicana_do.split('.')[1], row.vypozicana_do.split('.')[0])
-            const d2 = new Date(row.predlzenie_do.split('.')[2], row.predlzenie_do.split('.')[1], row.predlzenie_do.split('.')[0])
+            const d1 = new Date(row.vypozicana_do.split('-')[2], row.vypozicana_do.split('-')[1], row.vypozicana_do.split('-')[0])
+            const d2 = new Date(row.predlzenie_do.split('-')[2], row.predlzenie_do.split('-')[1], row.predlzenie_do.split('-')[0])
             return this.dateDiffInDays(d1, d2)
           }
         },
@@ -66,7 +66,7 @@ export default {
 
   mounted () {
     axios
-      .get('http://127.0.0.1:8081/ziadosti')
+      .get('http://127.0.0.1:8081/api/ziadosti/getAll')
       .then(response => {
         if (response.status === 200) {
           this.ziadosti = response.data
