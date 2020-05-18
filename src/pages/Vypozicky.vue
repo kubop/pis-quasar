@@ -11,6 +11,7 @@
         row-key="id"
         selection="single"
         :selected.sync="selected"
+        :pagination.sync="pagination"
       />
 
       <div class="aside col-4 q-pa-md">
@@ -91,9 +92,31 @@ export default {
             }
           }
         },
-        { name: 'datum_od', align: 'right', label: 'od', field: 'datum_od', format: val => val.split('-').join('.') },
-        { name: 'datum_do', align: 'left', label: 'do', field: 'datum_do', format: val => val.split('-').join('.') }
+        {
+          name: 'datum_od',
+          align: 'right',
+          label: 'od',
+          field: 'datum_od',
+          format: val => val.split('-').join('.')
+        },
+        {
+          name: 'datum_do',
+          align: 'left',
+          label: 'do',
+          field: 'datum_do',
+          format: val => val.split('-').join('.'),
+          sort: (a, b) => {
+            const d1 = new Date(a.split('-')[2], a.split('-')[1], a.split('-')[0])
+            const d2 = new Date(b.split('-')[2], b.split('-')[1], b.split('-')[0])
+            return d1 - d2
+          }
+        }
       ],
+      pagination: {
+        sortBy: 'datum_do',
+        descending: true
+      },
+
       myLocale: {
         /* starting with Sunday */
         days: 'Nedeľa_Pondelok_Utorok_Streda_Štvrtok_Piatok_Sobota'.split('_'),
