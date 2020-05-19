@@ -133,7 +133,7 @@ export default {
     this.date = new Date().toISOString().slice(0, 10)
     axios
       .post('http://127.0.0.1:8081/api/vypozicky/getByCitatelID', {
-        citatel: 1
+        citatel: 7916
       }).then(response => {
         if (response && response.status === 200 && response.data && response.data.length >= 1) {
           this.vypozicky = response.data
@@ -151,23 +151,6 @@ export default {
       }).catch(error => {
         console.log(error)
       })
-    /*
-    var url = 'http://localhost:8081/wsdl?WSDL'
-    var args = { email: 'value' }
-    soap.createClient(url, function (err, client) {
-      if (err) {
-        console.log(err)
-        return
-      }
-      client.validateEmail(args, function (err, result) {
-        if (err) {
-          console.log(err)
-          return
-        }
-        console.log(result)
-      })
-    })
-    */
   },
 
   methods: {
