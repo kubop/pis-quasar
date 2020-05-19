@@ -76,7 +76,7 @@ export default {
 
   mounted () {
     axios
-      .get('http://127.0.0.1:8081/api/ziadosti/getAll')
+      .get('http://80.240.23.127:8081/api/ziadosti/getAll')
       .then(response => {
         if (response.status === 200) {
           this.ziadosti = response.data

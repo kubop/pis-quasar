@@ -1,3 +1,4 @@
+
 <template>
   <q-page class="flex flex-center">
 
@@ -62,7 +63,7 @@ export default {
 
   methods: {
     onSubmit () {
-      const url = 'http://localhost:8081/wsdl/Auth?WSDL'
+      const url = 'http://80.240.23.127:8081/wsdl/Auth?WSDL'
       const args = {
         email: this.email,
         heslo: this.heslo

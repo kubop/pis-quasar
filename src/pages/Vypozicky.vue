@@ -132,13 +132,13 @@ export default {
   mounted () {
     this.date = new Date().toISOString().slice(0, 10)
     axios
-      .post('http://127.0.0.1:8081/api/vypozicky/getByCitatelID', {
+      .post('http://80.240.23.127:8081/api/vypozicky/getByCitatelID', {
         citatel: 7916
       }).then(response => {
         if (response && response.status === 200 && response.data && response.data.length >= 1) {
           this.vypozicky = response.data
           axios
-            .post('http://127.0.0.1:8081/api/knihy/getByIDs', {
+            .post('http://80.240.23.127:8081/api/knihy/getByIDs', {
               ids: this.knihy_ids
             }).then(response => {
               if (response && response.status === 200 && response.data && response.data.length >= 1) {
@@ -190,7 +190,7 @@ export default {
       }
 
       axios
-        .post('http://127.0.0.1:8081/api/vypozicky/predlzenieVypozicky', this.ziadost)
+        .post('http://80.240.23.127:8081/api/vypozicky/predlzenieVypozicky', this.ziadost)
         .then(response => {
           if (response.status === 200) {
             if (response.data.error) {
@@ -214,7 +214,7 @@ export default {
                 }
               }).onOk(() => {
                 axios
-                  .post('http://127.0.0.1:8081/api/ziadosti/vytvoritNovu', this.ziadost)
+                  .post('http://80.240.23.127:8081/api/ziadosti/vytvoritNovu', this.ziadost)
                   .then(response => {
                     if (response.status === 200) {
                       this.alert(
