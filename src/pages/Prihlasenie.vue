@@ -11,13 +11,18 @@
         v-model="email"
         label="Email"
         placeholder="Zadajte váš email"
+        type="email"
       />
 
-      <q-input
-        filled
-        v-model="heslo"
-        label="Heslo"
-      />
+      <q-input v-model="heslo" filled :type="isPwd ? 'password' : 'text'" label="Heslo">
+        <template v-slot:append>
+          <q-icon
+            :name="isPwd ? 'visibility_off' : 'visibility'"
+            class="cursor-pointer"
+            @click="isPwd = !isPwd"
+          />
+        </template>
+      </q-input>
 
       <div>
         <a href="#/prihlasenie/obnovenie-hesla">
@@ -33,19 +38,45 @@
 </template>
 
 <script>
+import * as soap from 'soap'
+
 export default {
   name: 'Prihlasenie',
 
   data () {
     return {
       email: null,
-      heslo: null
+      heslo: null,
+      isPwd: true
     }
   },
 
   methods: {
     onSubmit () {
-      console.log('here')
+      const url = 'http://localhost:8081/wsdl/Auth?WSDL'
+      const args = {
+        email: this.email,
+        heslo: this.heslo
+      }
+      soap.createClient(url, (err, client) => {
+        if (err) return console.log(err)
+
+        client.login(args, (err, result) => {
+          if (err) return console.log(err)
+
+          if (result.success) {
+            this.$q.dialog({
+              title: 'Úspešné prihlásenie',
+              message: 'Prihlásili ste sa (akože :-))'
+            })
+          } else {
+            this.$q.dialog({
+              title: 'Chyba',
+              message: 'Zadaný email alebo heslo je nesprávne'
+            })
+          }
+        })
+      })
     }
   },
 
