@@ -41,7 +41,17 @@ export default {
             return this.dateDiffInDays(d1, d2)
           }
         },
-        { name: 'podana_dna', align: 'left', label: 'podaná dňa', field: 'podana_dna' },
+        {
+          name: 'podana_dna',
+          align: 'left',
+          label: 'podaná dňa',
+          field: 'podana_dna',
+          sort: (a, b) => {
+            const d1 = new Date(a.split('-')[2], a.split('-')[1], a.split('-')[0])
+            const d2 = new Date(b.split('-')[2], b.split('-')[1], b.split('-')[0])
+            return d1 - d2
+          }
+        },
         {
           name: 'stav',
           align: 'left',
@@ -55,7 +65,7 @@ export default {
         }
       ],
       pagination: {
-        sortBy: 'id',
+        sortBy: 'podana_dna',
         descending: true,
         page: 1,
         rowsPerPage: 10

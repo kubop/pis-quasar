@@ -12,9 +12,18 @@
         label="Email"
         placeholder="Zadajte váš email"
         type="email"
+        lazy-rules
+        :rules="[ val => val && val.length > 0 || 'Zadajte email']"
       />
 
-      <q-input v-model="heslo" filled :type="isPwd ? 'password' : 'text'" label="Heslo">
+      <q-input
+        v-model="heslo"
+        filled
+        :type="isPwd ? 'password' : 'text'"
+        label="Heslo"
+        lazy-rules
+        :rules="[ val => val && val.length > 0 || 'Zadajte heslo']"
+      >
         <template v-slot:append>
           <q-icon
             :name="isPwd ? 'visibility_off' : 'visibility'"
@@ -45,8 +54,8 @@ export default {
 
   data () {
     return {
-      email: null,
-      heslo: null,
+      email: '',
+      heslo: '',
       isPwd: true
     }
   },
