@@ -42,6 +42,7 @@
 
         <p><b>3. Uvedte dôvod</b> žiadosti o predĺženie:</p>
         <q-input
+          :input-style="{ height: '300px' }"
           v-model="dovod_citatel"
           filled
           type="textarea"
@@ -307,5 +308,9 @@ export default {
 div .aside {
   border-radius: 4px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);
+}
+
+.textarea-dovod {
+  height: 300px
 }
 </style>
